@@ -1,3 +1,5 @@
+use std::fmt::Display;
+
 use super::color::Color;
 
 /** The width of the Connect 4 board. */
@@ -7,7 +9,7 @@ const POSIITON_WIDTH: usize = 7;
 const POSITION_HEIGHT: usize = 6;
 
 /** Represents a Connect 4 position. */
-pub(crate) struct Position {
+pub struct Position {
     grid: [[Option<Color>; POSIITON_WIDTH]; POSITION_HEIGHT],
 }
 
@@ -39,5 +41,24 @@ impl Position {
     /** Gets the number of moves having been played to reach this position. */
     pub fn num_moves_played() -> i32 {
         i32::MIN // TODO: Implement getter
+    }
+}
+
+impl Display for Position {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let board_str = self.grid.iter().rev().map(|row| {
+            let row_str = row.iter().map(|cell| {
+                if let Some(color) = cell {
+                    color.to_string()
+                } else {
+                    " ".to_owned()
+                }
+            }).collect::<Vec<String>>()
+            .join("|");
+
+            "|".to_owned() + &row_str + "|"
+        }).collect::<Vec<String>>().join("\n");
+
+        write!(f, "{board_str}")
     }
 }
