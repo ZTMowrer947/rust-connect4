@@ -29,7 +29,7 @@ impl Position {
     /**
      * Play in the given column.
      */
-    pub fn play_col(&self, col: usize) {
+    pub fn play_col(&mut self, col: usize) {
         // TODO: Implement method
     }
 
