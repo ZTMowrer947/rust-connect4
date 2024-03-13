@@ -1,2 +1,3 @@
+mod error;
 mod color;
-mod position;
+pub mod position;
