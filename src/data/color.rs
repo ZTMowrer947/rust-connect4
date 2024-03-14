@@ -9,6 +9,16 @@ pub(super) enum Color {
     YELLOW = 2
 }
 
+impl Color {
+    /** Returns the color of the opponent player. */
+    fn opponent(&self) -> Self {
+        match self {
+            Self::RED => Self::YELLOW,
+            Self::YELLOW => Self::RED
+        }
+    }
+}
+
 impl Display for Color {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         // R for a red cell, Y for yellow
