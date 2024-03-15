@@ -7,6 +7,12 @@ pub struct InvalidMoveError {
     position: Position,
 }
 
+impl InvalidMoveError {
+    pub(crate) fn new(col: usize, pos: Position) -> Self {
+        Self { col, position: pos }
+    }
+}
+
 impl Debug for InvalidMoveError {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         write!(f, "InvalidMoveError: invalidCol: {}", self.col)?;

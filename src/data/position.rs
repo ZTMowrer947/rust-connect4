@@ -1,36 +1,48 @@
 use std::fmt::Display;
 
-use super::color::Color;
+use super::{color::Color, error::InvalidMoveError};
 
 /** The width of the Connect 4 board. */
-const POSIITON_WIDTH: usize = 7;
+const POSITION_WIDTH: usize = 7;
 
 /** The height of the Connect 4 board. */
 const POSITION_HEIGHT: usize = 6;
 
 /** Represents a Connect 4 position. */
+#[derive(Clone, Copy)]
 pub struct Position {
-    grid: [[Option<Color>; POSIITON_WIDTH]; POSITION_HEIGHT],
+    grid: [[Option<Color>; POSITION_WIDTH]; POSITION_HEIGHT],
+    col_heights: [usize; POSITION_WIDTH],
+    num_moves: u8,
+    player_to_move: Color
 }
 
 impl Position {
     /** Initializes an empty board position. */
     pub fn empty() -> Self {
-        Position { grid: [[None; POSIITON_WIDTH]; POSITION_HEIGHT] }
+        Self {
+            grid: [[None; POSITION_WIDTH]; POSITION_HEIGHT],
+            num_moves: 0,
+            col_heights: [0; POSITION_WIDTH],
+            player_to_move: Color::RED,
+        }
     }
 
-    /**
-     * Whether this position allows playing in the given column.
-     */
-    pub fn can_play(&self, col: usize) -> bool {
-        false // TODO: Implement method
+    fn is_valid_col(col: usize) -> bool {
+        col < POSITION_WIDTH
     }
 
-    /**
-     * Play in the given column.
-     */
-    pub fn play_col(&mut self, col: usize) {
-        // TODO: Implement method
+    /** Attempts to play in the given column.
+        If playing at the column is invalid, an InvalidMoveError is
+        returned.
+      */
+    pub fn play_col(&mut self, col: usize) -> Result<(), InvalidMoveError> {
+        if Self::is_valid_col(col) {
+            // TODO: Actually make the move
+            Ok(())
+        } else {
+            Err(InvalidMoveError::new(col, *self))
+        }
     }
 
     /** Determine whether playing in the given column would win the game. */
