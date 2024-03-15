@@ -68,6 +68,7 @@ impl Display for Position {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let board_str = self.grid.iter().rev().map(|row| {
             let row_str = row.iter().map(|cell| {
+                // Map to either string of color or an empty space
                 if let Some(color) = cell {
                     color.to_string()
                 } else {
@@ -76,7 +77,7 @@ impl Display for Position {
             }).collect::<Vec<String>>()
             .join("|");
 
-            "|".to_owned() + &row_str + "|"
+            format!("|{row_str}|")
         }).collect::<Vec<String>>().join("\n");
 
         write!(f, "{board_str}")
