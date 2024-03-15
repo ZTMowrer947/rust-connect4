@@ -32,13 +32,21 @@ impl Position {
         col < POSITION_WIDTH
     }
 
+    fn is_col_open(&self, col: usize) -> bool {
+        self.col_heights[col] < POSITION_HEIGHT - 1
+    }
+
     /** Attempts to play in the given column.
         If playing at the column is invalid, an InvalidMoveError is
         returned.
       */
     pub fn play_col(&mut self, col: usize) -> Result<(), InvalidMoveError> {
-        if Self::is_valid_col(col) {
-            // TODO: Actually make the move
+        if Self::is_valid_col(col) && self.is_col_open(col) {
+            self.grid[self.col_heights[col]][col] = Some(self.player_to_move);
+            self.player_to_move = self.player_to_move.opponent();
+            self.col_heights[col] += 1;
+            self.num_moves += 1;
+
             Ok(())
         } else {
             Err(InvalidMoveError::new(col, *self))
