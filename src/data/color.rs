@@ -1,7 +1,7 @@
 use std::fmt::Display;
 
 /** Represents a colored chip on a Connect 4 board */
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub(super) enum Color {
     /** A red chip */
     RED = 1,
@@ -11,7 +11,7 @@ pub(super) enum Color {
 
 impl Color {
     /** Returns the color of the opponent player. */
-    fn opponent(&self) -> Self {
+    pub fn opponent(&self) -> Self {
         match self {
             Self::RED => Self::YELLOW,
             Self::YELLOW => Self::RED
