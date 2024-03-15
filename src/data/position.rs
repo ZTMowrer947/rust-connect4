@@ -59,8 +59,8 @@ impl Position {
     }
 
     /** Gets the number of moves having been played to reach this position. */
-    pub fn num_moves_played() -> i32 {
-        i32::MIN // TODO: Implement getter
+    pub fn num_moves_played(&self) -> u8 {
+        self.num_moves
     }
 }
 
@@ -80,5 +80,25 @@ impl Display for Position {
         }).collect::<Vec<String>>().join("\n");
 
         write!(f, "{board_str}")
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn position_empty_creates_proper_state() {
+        let pos = Position::empty();
+        
+        // Generate expected position string
+        let expected_str = ["| | | | | | | |";  POSITION_HEIGHT]
+            .into_iter()
+            .collect::<Vec<&str>>()
+            .join("\n");
+
+        // Test num moves to play and string representation
+        assert_eq!(pos.num_moves_played(), 0, "Empty position should have no moves played yet");
+        assert_eq!(pos.to_string(), expected_str, "Position string should show blank board")
     }
 }
