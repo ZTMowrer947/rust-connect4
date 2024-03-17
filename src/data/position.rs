@@ -93,6 +93,7 @@ impl Display for Position {
     }
 }
 
+// UNIT TESTS
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -118,5 +119,79 @@ mod tests {
             expected_str,
             "Position string should show blank board"
         )
+    }
+
+    #[test]
+    fn position_play_col_on_empty_position_places_red_chip_on_board() {
+        // Initialize empty position and vector of row strings to compare with
+        let mut pos = Position::empty();
+        let mut expected_str_vec = ["| | | | | | | |"; POSITION_HEIGHT]
+            .into_iter()
+            .map(|str| str.to_owned())
+            .collect::<Vec<String>>();
+
+        // Define columns to test for validity and non-validity
+        let valid_cols = 0..POSITION_WIDTH;
+        let invalid_cols = [POSITION_WIDTH, POSITION_WIDTH + 1, usize::MAX];
+
+        // First test invalid cols
+        for col in invalid_cols {
+            // Playing on out of range col should not work, nor change board state
+            assert!(
+                pos.play_col(col).is_err(),
+                "Playing in out of range column {col} should fail"
+            );
+
+            assert_eq!(
+                pos.to_string(),
+                expected_str_vec.join("\n"),
+                "Position should still have empty board state after invalid move"
+            );
+            assert_eq!(
+                pos.num_moves_played(),
+                0,
+                "Position should not update move counter after invalid move"
+            );
+        }
+
+        // Next test valid cols
+        for col in valid_cols {
+            let mut pos_copy = pos.clone();
+
+            // Generate expected board string based on move
+            expected_str_vec.pop();
+
+            let mut new_row_str = String::with_capacity(15);
+            new_row_str.push('|');
+
+            for _ in 0..col {
+                new_row_str.push_str(" |")
+            }
+
+            new_row_str.push_str("R|");
+
+            for _ in (col + 1)..POSITION_WIDTH {
+                new_row_str.push_str(" |")
+            }
+
+            expected_str_vec.push(new_row_str);
+
+            // Ensure move is accepted and board state accordingly update
+            assert!(
+                pos_copy.play_col(col).is_ok(),
+                "Playing in the in-range column {col} should not fail"
+            );
+            assert_eq!(
+                pos_copy.to_string(),
+                expected_str_vec.join("\n"),
+                "Playing in column {col} should update board state with red chip"
+            );
+
+            assert_eq!(
+                pos_copy.num_moves_played(),
+                1,
+                "Playing in column {col} should increment move count"
+            );
+        }
     }
 }
