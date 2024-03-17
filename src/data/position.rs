@@ -14,7 +14,7 @@ pub struct Position {
     grid: [[Option<Color>; POSITION_WIDTH]; POSITION_HEIGHT],
     col_heights: [usize; POSITION_WIDTH],
     num_moves: u8,
-    player_to_move: Color
+    player_to_move: Color,
 }
 
 impl Position {
@@ -37,9 +37,9 @@ impl Position {
     }
 
     /** Attempts to play in the given column.
-        If playing at the column is invalid, an InvalidMoveError is
-        returned.
-      */
+      If playing at the column is invalid, an InvalidMoveError is
+      returned.
+    */
     pub fn play_col(&mut self, col: usize) -> Result<(), InvalidMoveError> {
         if Self::is_valid_col(col) && self.is_col_open(col) {
             self.grid[self.col_heights[col]][col] = Some(self.player_to_move);
@@ -66,19 +66,28 @@ impl Position {
 
 impl Display for Position {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let board_str = self.grid.iter().rev().map(|row| {
-            let row_str = row.iter().map(|cell| {
-                // Map to either string of color or an empty space
-                if let Some(color) = cell {
-                    color.to_string()
-                } else {
-                    " ".to_owned()
-                }
-            }).collect::<Vec<String>>()
-            .join("|");
+        let board_str = self
+            .grid
+            .iter()
+            .rev()
+            .map(|row| {
+                let row_str = row
+                    .iter()
+                    .map(|cell| {
+                        // Map to either string of color or an empty space
+                        if let Some(color) = cell {
+                            color.to_string()
+                        } else {
+                            " ".to_owned()
+                        }
+                    })
+                    .collect::<Vec<String>>()
+                    .join("|");
 
-            format!("|{row_str}|")
-        }).collect::<Vec<String>>().join("\n");
+                format!("|{row_str}|")
+            })
+            .collect::<Vec<String>>()
+            .join("\n");
 
         write!(f, "{board_str}")
     }
@@ -91,15 +100,23 @@ mod tests {
     #[test]
     fn position_empty_creates_proper_state() {
         let pos = Position::empty();
-        
+
         // Generate expected position string
-        let expected_str = ["| | | | | | | |";  POSITION_HEIGHT]
+        let expected_str = ["| | | | | | | |"; POSITION_HEIGHT]
             .into_iter()
             .collect::<Vec<&str>>()
             .join("\n");
 
         // Test num moves to play and string representation
-        assert_eq!(pos.num_moves_played(), 0, "Empty position should have no moves played yet");
-        assert_eq!(pos.to_string(), expected_str, "Position string should show blank board")
+        assert_eq!(
+            pos.num_moves_played(),
+            0,
+            "Empty position should have no moves played yet"
+        );
+        assert_eq!(
+            pos.to_string(),
+            expected_str,
+            "Position string should show blank board"
+        )
     }
 }
