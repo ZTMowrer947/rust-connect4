@@ -24,7 +24,7 @@ impl Position {
             grid: [[None; POSITION_WIDTH]; POSITION_HEIGHT],
             num_moves: 0,
             col_heights: [0; POSITION_WIDTH],
-            player_to_move: Color::RED,
+            player_to_move: Color::Red,
         }
     }
 
