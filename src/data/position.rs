@@ -33,7 +33,7 @@ impl Position {
     }
 
     fn is_col_open(&self, col: usize) -> bool {
-        self.col_heights[col] < POSITION_HEIGHT - 1
+        self.col_heights[col] < POSITION_HEIGHT
     }
 
     /** Attempts to play in the given column.
@@ -178,5 +178,43 @@ mod tests {
             // Revert change of red cell in expected string
             expected_str.replace_range(new_char_idx..new_char_idx + 1, " ");
         }
+    }
+
+    #[test]
+    fn position_play_col_on_same_column_should_alternate_colors() {
+        let mut pos = Position::empty();
+
+        // Generate blank expected string board
+        let mut expected_str = "| | | | | | | |\n".repeat(POSITION_HEIGHT);
+        expected_str.pop();
+
+        // Genereate alternating set of color strings
+        let expected_colors = ["R", "Y", "R", "Y", "R", "Y"];
+        let col = 0;
+
+        for (col_height, color) in expected_colors.iter().enumerate() {
+            // Calculate index to place expected color cell, and replace empty space with it
+            let new_char_idx =
+                (POSITION_WIDTH + 1) * 2 * (POSITION_HEIGHT - 1 - col_height) + 1 + (col * 2);
+            expected_str.replace_range(new_char_idx..new_char_idx + 1, color);
+
+            // Playing at this clumn should yield Ok, should increment move counter, and yield correct board state
+            assert!(
+                pos.play_col(col).is_ok(),
+                "Playing at column {col} with height {col_height} should be valid"
+            );
+
+            assert_eq!(
+                pos.num_moves_played() as usize,
+                col_height + 1,
+                "Number of moves should be {} after playing in column {col} that many times",
+                col_height + 1
+            );
+        }
+
+        assert!(
+            pos.play_col(col).is_err(),
+            "Playing at full column {col} should fail"
+        );
     }
 }
