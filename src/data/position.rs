@@ -103,10 +103,8 @@ mod tests {
         let pos = Position::empty();
 
         // Generate expected position string
-        let expected_str = ["| | | | | | | |"; POSITION_HEIGHT]
-            .into_iter()
-            .collect::<Vec<&str>>()
-            .join("\n");
+        let mut expected_str = "| | | | | | | |\n".repeat(POSITION_HEIGHT);
+        expected_str.pop();
 
         // Test num moves to play and string representation
         assert_eq!(
@@ -123,12 +121,10 @@ mod tests {
 
     #[test]
     fn position_play_col_on_empty_position_places_red_chip_on_board() {
-        // Initialize empty position and vector of row strings to compare with
+        // Initialize empty position and board string to compare with
         let mut pos = Position::empty();
-        let mut expected_str_vec = ["| | | | | | | |"; POSITION_HEIGHT]
-            .into_iter()
-            .map(|str| str.to_owned())
-            .collect::<Vec<String>>();
+        let mut expected_str = "| | | | | | | |\n".repeat(POSITION_HEIGHT);
+        expected_str.pop();
 
         // Define columns to test for validity and non-validity
         let valid_cols = 0..POSITION_WIDTH;
@@ -144,7 +140,7 @@ mod tests {
 
             assert_eq!(
                 pos.to_string(),
-                expected_str_vec.join("\n"),
+                expected_str,
                 "Position should still have empty board state after invalid move"
             );
             assert_eq!(
@@ -158,23 +154,9 @@ mod tests {
         for col in valid_cols {
             let mut pos_copy = pos.clone();
 
-            // Generate expected board string based on move
-            expected_str_vec.pop();
-
-            let mut new_row_str = String::with_capacity(15);
-            new_row_str.push('|');
-
-            for _ in 0..col {
-                new_row_str.push_str(" |")
-            }
-
-            new_row_str.push_str("R|");
-
-            for _ in (col + 1)..POSITION_WIDTH {
-                new_row_str.push_str(" |")
-            }
-
-            expected_str_vec.push(new_row_str);
+            // Calculate index to place expected red cell, and replace empty space with it
+            let new_char_idx = (POSITION_WIDTH + 1) * 2 * (POSITION_HEIGHT - 1) + 1 + (col * 2);
+            expected_str.replace_range(new_char_idx..new_char_idx + 1, "R");
 
             // Ensure move is accepted and board state accordingly update
             assert!(
@@ -183,7 +165,7 @@ mod tests {
             );
             assert_eq!(
                 pos_copy.to_string(),
-                expected_str_vec.join("\n"),
+                expected_str,
                 "Playing in column {col} should update board state with red chip"
             );
 
@@ -192,6 +174,9 @@ mod tests {
                 1,
                 "Playing in column {col} should increment move count"
             );
+
+            // Revert change of red cell in expected string
+            expected_str.replace_range(new_char_idx..new_char_idx + 1, " ");
         }
     }
 }
