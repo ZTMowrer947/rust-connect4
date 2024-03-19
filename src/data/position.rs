@@ -28,6 +28,12 @@ impl Position {
         }
     }
 
+    /** Places a cell of the current player at the given coordinate. */
+    fn set_cell(&mut self, row: usize, col: usize) {
+        self.grid[row][col] = Some(self.player_to_move);
+        self.col_heights[col] += 1;
+    }
+
     /** Attempts to play in the given column.
       If playing at the column is invalid, an InvalidMoveError is
       returned.
@@ -44,9 +50,8 @@ impl Position {
             })?;
 
         // Update the board state
-        self.grid[row][col] = Some(self.player_to_move);
+        self.set_cell(row, col);
         self.player_to_move = self.player_to_move.opponent();
-        self.col_heights[col] += 1;
         self.num_moves += 1;
 
         Ok(())
