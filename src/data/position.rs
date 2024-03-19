@@ -9,7 +9,7 @@ const POSITION_WIDTH: usize = 7;
 const POSITION_HEIGHT: usize = 6;
 
 /** Represents a Connect 4 position. */
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, PartialEq)]
 pub struct Position {
     grid: [[Option<Color>; POSITION_WIDTH]; POSITION_HEIGHT],
     col_heights: [usize; POSITION_WIDTH],
@@ -140,8 +140,8 @@ mod tests {
         for col in invalid_cols {
             // Playing on out of range col should not work, nor change board state
             assert!(
-                pos.play_col(col).is_err(),
-                "Playing in out of range column {col} should fail"
+                pos.play_col(col).is_err_and(|err| err == PositionOpError::OutOfRangeCol(col)),
+                "Playing in out of range column {col} should fail with OutOfRangeCol error"
             );
 
             assert_eq!(
@@ -219,8 +219,8 @@ mod tests {
         }
 
         assert!(
-            pos.play_col(col).is_err(),
-            "Playing at full column {col} should fail"
+            pos.play_col(col).is_err_and(|err| err == PositionOpError::FullCol(col)),
+            "Playing at full column {col} should fail with FullCol error"
         );
     }
 }

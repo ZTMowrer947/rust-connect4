@@ -2,7 +2,7 @@ use thiserror::Error;
 
 use super::position::Position;
 
-#[derive(Error, Debug)]
+#[derive(Error, Debug, PartialEq)]
 pub enum PositionOpError {
     #[error("Playing at column {} would be out of bounds", .0 + 1)]
     OutOfRangeCol(usize),
