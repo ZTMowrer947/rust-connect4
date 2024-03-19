@@ -1,6 +1,6 @@
 use std::fmt::{Debug,Display};
 
-use super::{color::Color, error::InvalidMoveError};
+use super::{color::Color, error::PositionOpError};
 
 /** The width of the Connect 4 board. */
 const POSITION_WIDTH: usize = 7;
@@ -32,16 +32,16 @@ impl Position {
       If playing at the column is invalid, an InvalidMoveError is
       returned.
     */
-    pub fn play_col(&mut self, col: usize) -> Result<(), InvalidMoveError> {
+    pub fn play_col(&mut self, col: usize) -> Result<(), PositionOpError> {
         // Attempt to find row to place new cell into, verifying col validity
         let row = self.col_heights.get(col)
+            .ok_or(PositionOpError::OutOfRangeCol(col))
             // Ensure that the row index would also be in bounds
             .and_then(|&row| {
                 self.grid.get(row)
                     .map(|_| row)
-            })
-            // If either check fails, return an error
-            .ok_or_else(|| InvalidMoveError::new(col, *self))?;
+                    .ok_or(PositionOpError::FullCol(col))
+            })?;
 
         // Update the board state
         self.grid[row][col] = Some(self.player_to_move);
