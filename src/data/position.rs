@@ -1,4 +1,4 @@
-use std::fmt::Display;
+use std::fmt::{Debug,Display};
 
 use super::{color::Color, error::InvalidMoveError};
 
@@ -89,6 +89,13 @@ impl Display for Position {
             .join("\n");
 
         write!(f, "{board_str}")
+    }
+}
+
+impl Debug for Position {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        // Delegate to Display implementation
+        write!(f, "{self}")
     }
 }
 
