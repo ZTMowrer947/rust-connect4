@@ -54,7 +54,7 @@ impl Position {
 
     /** Determine whether playing in the given column would win the game. */
     pub fn move_wins(&self, col: usize) -> bool {
-        false // TODO: Implement method
+        todo!();
     }
 
     /** Gets the number of moves having been played to reach this position. */
