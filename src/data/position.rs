@@ -1,4 +1,4 @@
-use std::fmt::{Debug,Display};
+use std::fmt::{Debug, Display};
 
 use super::{color::Color, error::PositionOpError};
 
@@ -34,20 +34,28 @@ impl Position {
         self.col_heights[col] += 1;
     }
 
+    /** Attempts to find the lowest open row of the given column. */
+    fn find_row(self, col: usize) -> Result<usize, PositionOpError> {
+        // First verify that column is in bounds
+        self.col_heights
+            .get(col)
+            .ok_or(PositionOpError::OutOfRangeCol(col))
+            // and then ensure that the column isn't full
+            .and_then(|&row| {
+                self.grid
+                    .get(row)
+                    .map(|_| row)
+                    .ok_or(PositionOpError::FullCol(col))
+            })
+    }
+
     /** Attempts to play in the given column.
       If playing at the column is invalid, an InvalidMoveError is
       returned.
     */
     pub fn play_col(&mut self, col: usize) -> Result<(), PositionOpError> {
-        // Attempt to find row to place new cell into, verifying col validity
-        let row = self.col_heights.get(col)
-            .ok_or(PositionOpError::OutOfRangeCol(col))
-            // Ensure that the row index would also be in bounds
-            .and_then(|&row| {
-                self.grid.get(row)
-                    .map(|_| row)
-                    .ok_or(PositionOpError::FullCol(col))
-            })?;
+        // Get row to play column in
+        let row = self.find_row(col)?;
 
         // Update the board state
         self.set_cell(row, col);
@@ -145,7 +153,8 @@ mod tests {
         for col in invalid_cols {
             // Playing on out of range col should not work, nor change board state
             assert!(
-                pos.play_col(col).is_err_and(|err| err == PositionOpError::OutOfRangeCol(col)),
+                pos.play_col(col)
+                    .is_err_and(|err| err == PositionOpError::OutOfRangeCol(col)),
                 "Playing in out of range column {col} should fail with OutOfRangeCol error"
             );
 
@@ -224,7 +233,8 @@ mod tests {
         }
 
         assert!(
-            pos.play_col(col).is_err_and(|err| err == PositionOpError::FullCol(col)),
+            pos.play_col(col)
+                .is_err_and(|err| err == PositionOpError::FullCol(col)),
             "Playing at full column {col} should fail with FullCol error"
         );
     }
