@@ -91,20 +91,26 @@ impl Position {
 
             // If that didn't match, check horizontals and diagonals
             (-1..=1).any(|row_delta| {
-                let mut num_matches = 0;
-                for col_delta in [-1, 1].into_iter() {
-                    let mut curr_col = col as i32 + col_delta;
-                    let mut curr_row = row as i32 + (row_delta * col_delta);
+                // Sum matching cells in both directions from current cell
+                let num_matches: i32 = [-1, 1]
+                    .into_iter()
+                    .map(|col_delta| {
+                        let mut matches = 0;
+                        let mut curr_col = col as i32 + col_delta;
+                        let mut curr_row = row as i32 + (row_delta * col_delta);
 
-                    // Increment match counter while coordinates are in range and cells match player color
-                    while (0..POSITION_WIDTH as i32).contains(&curr_col)
-                        && cell_is_player(&(curr_row as usize), &(curr_col as usize))
-                    {
-                        num_matches += 1;
-                        curr_col += col_delta;
-                        curr_row += row_delta * col_delta;
-                    }
-                }
+                        // Increment match counter while coordinates are in range and cells match player color
+                        while (0..POSITION_WIDTH as i32).contains(&curr_col)
+                            && cell_is_player(&(curr_row as usize), &(curr_col as usize))
+                        {
+                            matches += 1;
+                            curr_col += col_delta;
+                            curr_row += row_delta * col_delta;
+                        }
+
+                        matches
+                    })
+                    .sum();
 
                 // If we find at least 3 in a row, this wins
                 num_matches >= 3
