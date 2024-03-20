@@ -90,7 +90,7 @@ impl Position {
             }
 
             // If that didn't match, check horizontals and diagonals
-            for row_delta in -1..=1 {
+            (-1..=1).any(|row_delta| {
                 let mut num_matches = 0;
                 for col_delta in [-1, 1].into_iter() {
                     let mut curr_col = col as i32 + col_delta;
@@ -107,12 +107,8 @@ impl Position {
                 }
 
                 // If we find at least 3 in a row, this wins
-                if num_matches >= 3 {
-                    return true;
-                }
-            }
-
-            false
+                num_matches >= 3
+            })
         })
     }
 
