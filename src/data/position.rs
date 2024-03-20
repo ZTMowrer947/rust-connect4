@@ -238,4 +238,68 @@ mod tests {
             "Playing at full column {col} should fail with FullCol error"
         );
     }
+
+    #[test]
+    fn position_move_wins_finds_winning_positions_on_all_axes() {
+        // Create setup columns and column to win at
+        let setup_cols = vec![
+            // Two horizontal wins for red
+            (vec![0, 0, 1, 1, 2, 2], 3),
+            (
+                vec![
+                    POSITION_WIDTH - 1,
+                    POSITION_WIDTH - 1,
+                    POSITION_WIDTH - 2,
+                    POSITION_WIDTH - 2,
+                    POSITION_WIDTH - 3,
+                    POSITION_WIDTH - 3,
+                ],
+                POSITION_WIDTH - 4,
+            ),
+            // Two horizontal wins for yellow
+            (vec![0, 0, 1, 1, 2, 2, 4, 3, 4], 3),
+            (
+                vec![
+                    POSITION_WIDTH - 1,
+                    POSITION_WIDTH - 1,
+                    POSITION_WIDTH - 2,
+                    POSITION_WIDTH - 2,
+                    POSITION_WIDTH - 3,
+                    POSITION_WIDTH - 3,
+                    POSITION_WIDTH - 5,
+                    POSITION_WIDTH - 4,
+                    POSITION_WIDTH - 5,
+                ],
+                POSITION_WIDTH - 4,
+            ),
+            // Two verical wins for red
+            (vec![3, 4, 3, 4, 3, 4], 3),
+            (vec![0, 2, 0, 1, 0, 1], 0),
+            // Two vertical wins for yellow
+            (vec![3, 4, 2, 4, 1, 4, 5], 4),
+            (vec![0, 1, 5, 1, 3, 1, 4], 1),
+            // Two diagonal wins for red
+            (vec![1, 2, 2, 2, 3, 3, 3, 4, 4, 4], 4),
+            (vec![0, 1, 1, 3, 2, 2, 3, 3, 3, 5], 2),
+            // Two diagonal wins for yellow
+            (vec![1, 3, 2, 1, 2, 2, 3, 3, 5, 3, 5], 0),
+            (vec![0, 0, 0, 0, 2, 2, 2, 1, 1, 1, 2], 3),
+        ];
+
+        for (cols, winning_col) in setup_cols {
+            let mut pos = Position::empty();
+
+            for col in cols {
+                assert!(
+                    pos.play_col(col).is_ok(),
+                    "Should be able to play at column {col} on position\n: {pos}"
+                );
+            }
+
+            assert!(
+                pos.move_wins(winning_col),
+                "Playing at column {winning_col} should win for position\n: {pos}"
+            );
+        }
+    }
 }
