@@ -3,10 +3,10 @@ use std::fmt::{Debug, Display};
 use super::{color::Color, error::PositionOpError};
 
 /** The width of the Connect 4 board. */
-const POSITION_WIDTH: usize = 7;
+pub(crate) const POSITION_WIDTH: usize = 7;
 
 /** The height of the Connect 4 board. */
-const POSITION_HEIGHT: usize = 6;
+pub(crate) const POSITION_HEIGHT: usize = 6;
 
 /** Represents a Connect 4 position. */
 #[derive(Clone, Copy, PartialEq)]
