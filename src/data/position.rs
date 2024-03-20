@@ -67,7 +67,53 @@ impl Position {
 
     /** Determine whether playing in the given column would win the game. */
     pub fn move_wins(&self, col: usize) -> bool {
-        todo!();
+        let cell_is_player = |row_idx: &usize, col_idx: &usize| {
+            self.grid
+                .get(*row_idx)
+                .and_then(|row| row.get(*col_idx))
+                .and_then(|cell| *cell)
+                .is_some_and(|cell| cell == self.player_to_move)
+        };
+
+        self.find_row(col).is_ok_and(|row| {
+            // Count the number of vertical matches, short-circuiting to 0 if too short
+            let vertical_matches = match row {
+                n if n < 3 => 0,
+                _ => ((row - 3)..row)
+                    .take_while(|r| cell_is_player(r, &col))
+                    .count(),
+            };
+
+            // Check if there are three player cells below this coordinate
+            if vertical_matches == 3 {
+                return true;
+            }
+
+            // If that didn't match, check horizontals and diagonals
+            for row_delta in -1..=1 {
+                let mut num_matches = 0;
+                for col_delta in [-1, 1].into_iter() {
+                    let mut curr_col = col as i32 + col_delta;
+                    let mut curr_row = row as i32 + (row_delta * col_delta);
+
+                    // Increment match counter while coordinates are in range and cells match player color
+                    while (0..POSITION_WIDTH as i32).contains(&curr_col)
+                        && cell_is_player(&(curr_row as usize), &(curr_col as usize))
+                    {
+                        num_matches += 1;
+                        curr_col += col_delta;
+                        curr_row += row_delta * col_delta;
+                    }
+                }
+
+                // If we find at least 3 in a row, this wins
+                if num_matches >= 3 {
+                    return true;
+                }
+            }
+
+            false
+        })
     }
 
     /** Gets the number of moves having been played to reach this position. */
